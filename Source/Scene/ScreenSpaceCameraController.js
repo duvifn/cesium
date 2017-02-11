@@ -629,6 +629,8 @@ define([
                         // Set new position
                         Cartesian3.clone(cameraPosition, camera.position);
 
+
+
                         // Set new direction
                         Cartesian3.normalize(Cartesian3.subtract(center, cameraPosition, scratchCartesian), camera.direction);
                         Cartesian3.clone(camera.direction, camera.direction);
@@ -636,6 +638,18 @@ define([
                         // Set new right & up vectors
                         Cartesian3.cross(camera.direction, camera.up, camera.right);
                         Cartesian3.cross(camera.right, camera.direction, camera.up);
+
+                        // check if we zoomed past the target, again
+                        cameraPositionNormal = Cartesian3.normalize(camera.position, cameraPositionNormal);
+                        Cartesian3.subtract(target, camera.position, positionToTarget);
+
+                        Cartesian3.normalize(positionToTarget, positionToTargetNormal);
+
+                        if (Cartesian3.dot(cameraPositionNormal, positionToTargetNormal) >= 0.0) {
+                            // We zoomed past the target, and this zoom is not valid anymore.
+                            // This line causes the next zoom movement to pick a new starting point.
+                            object._zoomMouseStart.x = -1;
+                        }
 
                         return;
                     }
